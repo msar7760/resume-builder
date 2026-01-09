@@ -1,7 +1,8 @@
 import createApp from './app';
 
-const port = 3000;
+const PORT = process.env.PORT || 3000; // Use dynamic port if available
 const app = createApp();
-app.listen(port, () => {
-    console.log(`Server running on https://localhost:${port}`);
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
