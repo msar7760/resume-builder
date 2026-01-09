@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const API_URL = "http://16.171.70.68:3000/api/generate";
+const API_URL = "https://backend-purple-moon-7936.fly.dev/api/generate";
 
 const App: React.FC = () => {
     const [loading, setLoading] = useState(false);
