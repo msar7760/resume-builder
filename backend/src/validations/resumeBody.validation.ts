@@ -44,8 +44,23 @@ export const resumeBodySchema = Joi.object({
         .min(1)
         .required(),
 
-    skills: Joi.array()
-        .items(Joi.string().max(50))
-        .min(1)
-        .required(),
+    technicalSkills: Joi.array().items(Joi.string().max(50)).min(1).required(),
+
+    softSkills: Joi.array().items(Joi.string().max(50)).min(1).required(),
+
+    awards: Joi.array().items(
+        Joi.object({
+            title: Joi.string().required(),
+            issuer: Joi.string().required(),
+            year: Joi.string().pattern(/^\d{4}$/).required(),
+        })
+    ).optional(),
+
+    research: Joi.array().items(
+        Joi.object({
+            title: Joi.string().required(),
+            description: Joi.string().required(),
+            link: Joi.string().uri().optional(),
+        })
+    ).optional(),
 }).required();
