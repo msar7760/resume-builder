@@ -28,6 +28,7 @@ export const resumeBodySchema = Joi.object({
                     .items(Joi.string().max(300))
                     .min(1)
                     .required(),
+                skills: Joi.string().max(1000).required()
             })
         )
         .min(1)
@@ -44,9 +45,17 @@ export const resumeBodySchema = Joi.object({
         .min(1)
         .required(),
 
-    technicalSkills: Joi.array().items(Joi.string().max(50)).min(1).required(),
+    technicalSkills: Joi.array()
+        .items(
+            Joi.object({
+                name: Joi.string().max(100).required(),
+                years: Joi.string().max(20).required() // Matches "7 Jahre" from image
+            })
+        )
+        .min(1)
+        .required(),
 
-    softSkills: Joi.array().items(Joi.string().max(50)).min(1).required(),
+    softSkills: Joi.array().items(Joi.string().max(50)).min(1).optional(),
 
     awards: Joi.array().items(
         Joi.object({
@@ -63,4 +72,14 @@ export const resumeBodySchema = Joi.object({
             link: Joi.string().uri().optional(),
         })
     ).optional(),
+
+    // Add this new section for languages
+    languages: Joi.array()
+        .items(
+            Joi.object({
+                name: Joi.string().required(),
+                level: Joi.string().required() // Matches "Native" or "Fluent"
+            })
+        )
+        .optional(),
 }).required();

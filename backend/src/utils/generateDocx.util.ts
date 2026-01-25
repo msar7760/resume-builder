@@ -3,177 +3,224 @@ import {
     Packer,
     Paragraph,
     TextRun,
-    AlignmentType,
+    HorizontalPositionRelativeFrom,
+    VerticalPositionRelativeFrom,
+    FrameWrap,
+    ShadingType,
     BorderStyle,
-    HeadingLevel, ExternalHyperlink,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType,
+    HeightRule,
+    Header,
+    TabStopType,
+    AlignmentType
 } from "docx";
 
 export async function generateResumeDocx(data: any) {
-    // Helper to create section headers with a bottom border
-    const createHeader = (text: string) => new Paragraph({
-        text: text.toUpperCase(),
-        heading: HeadingLevel.HEADING_2,
-        spacing: { before: 240, after: 120 },
-        border: {
-            bottom: { color: "000000", space: 1, style: BorderStyle.SINGLE, size: 6 },
-        },
-    });
-
     const doc = new Document({
         sections: [{
-            properties: {},
-            children: [
-                // NAME
-                new Paragraph({
-                    alignment: AlignmentType.CENTER,
+            properties: {
+                page: {
+                    margin: { top: 0, right: 0, bottom: 0, left: 0 },
+                },
+            },
+            headers: {
+                default: new Header({
                     children: [
-                        new TextRun({
-                            text: data.personal.fullName,
-                            bold: true,
-                            size: 48, // 24pt
+                        new Paragraph({
+                            frame: {
+                                type: "absolute",
+                                anchor: {
+                                    horizontal: HorizontalPositionRelativeFrom.PAGE,
+                                    vertical: VerticalPositionRelativeFrom.PAGE,
+                                },
+                                position: { x: 0, y: 0 },
+                                width: 3500,
+                                height: 30000,
+                                wrap: FrameWrap.NONE,
+                            },
+                            shading: {
+                                fill: "D9D9D9",
+                                type: ShadingType.CLEAR,
+                            },
+                            children: [],
                         }),
                     ],
                 }),
-
-                // CONTACT INFO (Email | Phone | Location | LinkedIn)
-                new Paragraph({
-                    alignment: "center",
-                    children: [
-                        new TextRun(`${data.personal.email}  |  ${data.personal.phone}  |  ${data.personal.location}`),
-                        ...(data.personal.linkedin ? [
-                            new TextRun("  |  "),
-                            new ExternalHyperlink({
-                                children: [
-                                    new TextRun({
-                                        text: "LinkedIn Profile",
-                                        color: "0000FF",
-                                        underline: { type: "single" },
-                                    }),
-                                ],
-                                link: data.personal.linkedin,
-                            })
-                        ] : []),
+            },
+            children: [
+                new Table({
+                    width: { size: 100, type: WidthType.PERCENTAGE },
+                    borders: {
+                        top: { style: BorderStyle.NONE },
+                        bottom: { style: BorderStyle.NONE },
+                        left: { style: BorderStyle.NONE },
+                        right: { style: BorderStyle.NONE },
+                        insideHorizontal: { style: BorderStyle.NONE },
+                        insideVertical: { style: BorderStyle.NONE },
+                    },
+                    rows: [
+                        new TableRow({
+                            children: [
+                                // --- LEFT COLUMN (Sidebar) ---
+                                new TableCell({
+                                    width: { size: 3500, type: WidthType.DXA },
+                                    children: [
+                                        new Paragraph({
+                                            indent: { left: 400 },
+                                            spacing: { before: 0 },
+                                            children: [new TextRun({ text: "Kontakt", bold: true, size: 32, color: "2D7D46" })],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 400, right: 400 },
+                                            border: { bottom: { color: "2D7D46", style: BorderStyle.SINGLE, size: 6 } },
+                                            spacing: { after: 200 },
+                                            children: [],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 400 },
+                                            children: [new TextRun({ text: "📞 " + data.personal.phone, size: 18 })],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 400 },
+                                            children: [new TextRun({ text: "✉ " + data.personal.email, size: 18 })],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 400 },
+                                            children: [new TextRun({ text: "📍 " + data.personal.location, size: 18 })],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 400 },
+                                            spacing: { before: 600 },
+                                            children: [new TextRun({ text: "Fähigkeiten", bold: true, size: 32, color: "2D7D46" })],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 400, right: 400 },
+                                            border: { bottom: { color: "2D7D46", style: BorderStyle.SINGLE, size: 6 } },
+                                            spacing: { after: 200 },
+                                            children: [],
+                                        }),
+                                        ...data.technicalSkills.map((skill: any) =>
+                                            new Paragraph({
+                                                indent: { left: 400, right: 400 },
+                                                tabStops: [{ type: TabStopType.RIGHT, position: 3100 }],
+                                                children: [
+                                                    new TextRun({ text: skill.name, size: 18 }),
+                                                    new TextRun({ text: `\t${skill.years}`, size: 18 }),
+                                                ],
+                                            })
+                                        ),
+                                        new Paragraph({
+                                            indent: { left: 400 },
+                                            spacing: { before: 600 },
+                                            children: [new TextRun({ text: "Sprachen", bold: true, size: 32, color: "2D7D46" })],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 400, right: 400 },
+                                            border: { bottom: { color: "2D7D46", style: BorderStyle.SINGLE, size: 6 } },
+                                            spacing: { after: 200 },
+                                            children: [],
+                                        }),
+                                        ...data.languages.map((lang: any) =>
+                                            new Paragraph({
+                                                indent: { left: 400, right: 400 },
+                                                tabStops: [{ type: TabStopType.RIGHT, position: 3100 }],
+                                                children: [
+                                                    new TextRun({ text: lang.name, size: 18 }),
+                                                    new TextRun({ text: `\t${lang.level}`, size: 18 }),
+                                                ],
+                                            })
+                                        ),
+                                        new Paragraph({
+                                            indent: { left: 400 },
+                                            spacing: { before: 600 },
+                                            pageBreakBefore: true,
+                                            children: [new TextRun({ text: "Bildung", bold: true, size: 32, color: "2D7D46" })],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 400, right: 400 },
+                                            border: { bottom: { color: "2D7D46", style: BorderStyle.SINGLE, size: 6 } },
+                                            spacing: { after: 200 },
+                                            children: [],
+                                        }),
+                                        ...data.education.map((edu: any) => [
+                                            new Paragraph({ indent: { left: 400 }, children: [new TextRun({ text: edu.degree, bold: true, size: 18 })] }),
+                                            new Paragraph({ indent: { left: 400 }, children: [new TextRun({ text: edu.institution, size: 18 })] }),
+                                            new Paragraph({ indent: { left: 400 }, spacing: { after: 200 }, children: [new TextRun({ text: `${edu.year || ''}`, size: 18 })] }),
+                                        ]).flat(),
+                                    ],
+                                }),
+                                // --- RIGHT COLUMN (Experience Layout Update) ---
+                                new TableCell({
+                                    width: { size: 8500, type: WidthType.DXA },
+                                    children: [
+                                        new Paragraph({
+                                            indent: { left: 600, right: 600 },
+                                            spacing: { before: 0, after: 200 },
+                                            children: [new TextRun({ text: data.personal.fullName.toUpperCase(), size: 40, bold: true })],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 600, right: 600 },
+                                            children: [new TextRun({ text: data.experience[0].role, bold: true, size: 30 })],
+                                            spacing: { after: 400, before: 200 },
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 600, right: 600 },
+                                            children: [new TextRun({ text: "Über mich", bold: true, size: 32 })],
+                                        }),
+                                        new Paragraph({
+                                            indent: { left: 600, right: 600 },
+                                            children: [new TextRun({ text: data.summary, size: 20 })],
+                                            spacing: { after: 400, before:100 },
+                                        }),
+                                        // --- RIGHT COLUMN: BERUFSERFAHRUNG Section ---
+                                        new Paragraph({
+                                            indent: { left: 600, right: 600 },
+                                            children: [new TextRun({ text: "Berufserfahrung", bold: true, size: 32 })],
+                                            spacing: { after: 200 },
+                                        }),
+                                        ...data.experience.map((exp: any, index: number) => [
+                                            // 1. Role and Date Line (Role is bold, Date is right-aligned)
+                                            new Paragraph({
+                                                indent: { left: 600, right: 600 },
+                                                spacing: { before: 200 },
+                                                tabStops: [{ type: TabStopType.RIGHT, position: 8000 }],
+                                                children: [
+                                                    new TextRun({ text: exp.role, bold: true, size: 22 }), // Role Style
+                                                    new TextRun({ text: `\t${exp.startDate} - ${exp.endDate}`, size: 18 }),
+                                                ],
+                                            }),
+                                            // 2. Company Line (Bold as per Image 1)
+                                            new Paragraph({
+                                                indent: { left: 600, right: 600 },
+                                                children: [new TextRun({ text: exp.company, bold: true, size: 18 })],
+                                            }),
+                                            // 3. Bullet Points
+                                            ...exp.bullets.map((bullet: string) =>
+                                                new Paragraph({
+                                                    indent: { left: 900, right: 600 },
+                                                    spacing: { before: 40 },
+                                                    children: [new TextRun({ text: `• ${bullet}`, size: 18 })],
+                                                })
+                                            ),
+                                            // 4. Skills Line (Bold label + list)
+                                            new Paragraph({
+                                                indent: { left: 600, right: 600 },
+                                                spacing: { before: 100, after: 200 },
+                                                children: [
+                                                    new TextRun({ text: "Skills: ", bold: true, size: 18 }),
+                                                    new TextRun({ text: exp.skills, size: 18 }) // Using your JSON key "skils"
+                                                ],
+                                            }),
+                                        ]).flat(),
+                                    ],
+                                }),
+                            ],
+                        }),
                     ],
                 }),
-
-                // SUMMARY
-                createHeader("Professional Summary"),
-                new Paragraph({
-                    children: [new TextRun(data.summary)],
-                    alignment: AlignmentType.JUSTIFIED,
-                }),
-
-                // EXPERIENCE
-                createHeader("Work Experience"),
-                ...data.experience.flatMap((job: any) => [
-                    new Paragraph({
-                        spacing: { before: 200, after: 120 }, // Spacing for clear hierarchy
-                        children: [
-                            new TextRun({
-                                text: job.role,
-                                bold: true,
-                                size: 24
-                            }),
-                            new TextRun({
-                                text: ` | `, // The separator
-                                bold: true,
-                                size: 24
-                            }),
-                            new TextRun({
-                                text: job.company,
-                                italics: true, // Italicize company for professional contrast
-                                size: 24
-                            }),
-                            // Date pushed to the far right
-                            new TextRun({
-                                text: `\t${job.startDate} – ${job.endDate}`,
-                                bold: true
-                            }),
-                        ],
-                        tabStops: [{ type: "right", position: 9000 }],
-                    }),
-
-                    // Bullet points
-                    ...job.bullets.map((bullet: string) => new Paragraph({
-                        text: bullet,
-                        bullet: { level: 0 },
-                        indent: { left: 720, hanging: 360 },
-                    })),
-                ]),
-
-                // EDUCATION
-                createHeader("Education"),
-                ...data.education.flatMap((edu: any) => [
-                    new Paragraph({
-                        // Adds gap before each new educational entry
-                        spacing: { before: 200 },
-                        children: [
-                            new TextRun({ text: edu.institution, bold: true }),
-                            new TextRun({ text: `\t${edu.year}`, bold: true }),
-                        ],
-                        tabStops: [{ type: "right", position: 9000 }],
-                    }),
-                    new Paragraph({
-                        text: edu.degree,
-                        spacing: { after: 100 } // Small space after the degree
-                    }),
-                ]),
-
-                // SKILLS
-                createHeader("Skills"),
-                // Technical Skills Row
-                new Paragraph({
-                    spacing: { before: 120 },
-                    children: [
-                        new TextRun({ text: "Technical Skills: ", bold: true }),
-                        new TextRun(data.technicalSkills.join(", ")),
-                    ],
-                }),
-                // Soft Skills Row
-                new Paragraph({
-                    spacing: { before: 80 },
-                    children: [
-                        new TextRun({ text: "Soft Skills: ", bold: true }),
-                        new TextRun(data.softSkills.join(", ")),
-                    ],
-                }),
-
-                // AWARDS SECTION
-                createHeader("Awards & Certificates"),
-                ...data.awards.map((award: any) => new Paragraph({
-                    // Adds a gap between each certificate/award
-                    spacing: { before: 120 },
-                    children: [
-                        new TextRun({ text: award.title, bold: true }),
-                        new TextRun({ text: `\t${award.issuer} (${award.year})` }),
-                    ],
-                    tabStops: [{ type: "right", position: 9000 }],
-                })),
-
-                // RESEARCH SECTION
-                createHeader("Research & Publications"),
-                ...data.research.flatMap((res: any) => [
-                    new Paragraph({
-                        // Gap before the research title
-                        spacing: { before: 200 },
-                        children: [
-                            new TextRun({ text: res.title, bold: true }),
-                        ],
-                    }),
-                    new Paragraph({
-                        spacing: { after: 120 }, // Gap after the entry is finished
-                        children: [
-                            new TextRun({ text: res.description }),
-                            ...(res.link ? [
-                                new TextRun(" "),
-                                new ExternalHyperlink({
-                                    children: [new TextRun({ text: "[View Publication]", color: "0000FF", underline: {} })],
-                                    link: res.link
-                                })
-                            ] : [])
-                        ],
-                    })
-                ])
             ],
         }],
     });
